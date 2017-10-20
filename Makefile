@@ -2,34 +2,40 @@
 
 # variables for building with
 CXX			= c++
+VPATH		= src
+BPATH		= build
 OBJ 		= WatchDog.o MonitoringAgent.o Logger.o
 BIN			= bin/*
-SRC_FILES	= src/*
-H_FILES 	= src/*.h
-O_FILES		= build/*.o
 CPP_FILES 	= src/*.cpp
-
-VPATH		= src
-BUILDDIR	= build
+H_FILES 	= include/*.h
+O_FILES		= build/*.o
 
 # compiler flags
-ARGS		= -Wall -Wextra -pedantic
+ARGS		= -std=c++11 -Wall -Wextra -pedantic
 LIBS		= -lcurl
+INCL		= -Iinclude
 
 # command shortcuts
 RM			= rm -f
 
+# building rules
 NetworkAgent: $(OBJ)
-	$(CXX) -o bin/NetworkAgent $(ARGS) $(LIBS) *.o
+	$(CXX) -o bin/NetworkAgent $(ARGS) $(LIBS) $(O_FILES)
 
-$(BUILDDIR)/%.o: %.cpp
-	$(CXX) -c $< -o $@
+WatchDog.o: WatchDog.cpp
+	$(CXX) -c $< $(INCL) -o $(BPATH)/WatchDog.o
 
+MonitoringAgent.o: MonitoringAgent.cpp
+	$(CXX) -c $< $(INCL) -o $(BPATH)/MonitoringAgent.o
+
+Logger.o: Logger.cpp
+	$(CXX) -c $< $(INCL) -o $(BPATH)/Logger.o
+
+# extra options
 .PHONY install clean:
 install:
-	cp bin/NetworkAgent ~/Downloads
-	chmod +x ~/Downloads/NetworkAgent
+	chmod +x bin/NetworkAgent
 
 clean:
-	$(RM) *.o
+	$(RM) $(O_FILES)
 	$(RM) $(BIN)
