@@ -1,0 +1,1 @@
+void signalWatcher( int signum );
