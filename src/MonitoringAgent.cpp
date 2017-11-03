@@ -20,30 +20,24 @@ using namespace std;
 CURL *curl;
 CURLcode httpResult;
 
-MonitoringAgent::MonitoringAgent( string assignedName, string assignedIP, string assignedReportingServer, string assignedLogPath ) 
-{
+// init the objects for use
+Logger agentLogger( "Agent   " );
 
+MonitoringAgent::MonitoringAgent( string assignedName, string assignedIP ) 
+{
     name = assignedName;
     ip = assignedIP;
-    reportingServer = assignedReportingServer;
-    logPath = assignedLogPath;
 
     // initialize curl with the networking stack
     // this is for some other methods
     curl_global_init(CURL_GLOBAL_ALL);
-
-    // get our logging object here
-    Logger logger( "Agent   ", logPath );
 }
 
 // check if the host is connected to the internet using curl
 // this tries to get to google
 int MonitoringAgent::checkConnectivity()
 {
-    // get our logging object here
-    Logger logger( "Agent   ", logPath );
-
-    logger.log( "Checking network connectivity..." );
+    agentLogger.log( "Checking network connectivity..." );
 
     int status = 0;
 
@@ -66,14 +60,12 @@ int MonitoringAgent::checkConnectivity()
         // check request response
         if( httpResult == CURLE_OK )
         {
-            logger.log( "Network connection found!" );
-            //this->report();
+            agentLogger.log( "Network connection found!" );
             status = 1;
         }
         else
         {
-            logger.log( "Unable to connect to network." );
-            //this->report();
+            agentLogger.log( "Unable to connect to network." );
             status = 0;
         }
    
@@ -85,40 +77,25 @@ int MonitoringAgent::checkConnectivity()
 }
 
 // checks bandwidth thoroughput of the host
-void MonitoringAgent::checkBandwidth() 
+int MonitoringAgent::checkBandwidth() 
 {
-    // get our logging object here
-    Logger logger( "Agent   ", logPath );
+    agentLogger.log( "Checking bandwidth capacity..." );
 
-    logger.log( "Checking bandwidth capacity..." );
-    //this->report();
+    return 0;
 }
 
 // checks network latency of the host
-void MonitoringAgent::checkLatency() 
+int MonitoringAgent::checkLatency() 
 {
-    // get our logging object here
-    Logger logger( "Agent   ", logPath );
+    agentLogger.log( "Checking network latency..." );
 
-    logger.log( "Checking network latency..." );
-    //this->report();
+    return 0;
 }
 
 // checks the current processing load of the host
-void MonitoringAgent::checkCPU() 
+int MonitoringAgent::checkCPU() 
 {
-    // get our logging object here
-    Logger logger( "Agent   ", logPath );
+    agentLogger.log( "Checking CPU load..." );
 
-    logger.log( "Checking CPU load..." );
-    //this->report();
-}
-
-// reports all data to the central server
-void MonitoringAgent::report( string server ) 
-{
-    // get our logging object here
-    Logger logger( "Agent   ", logPath );
-
-    logger.log( "Sending data to " + server + "..." ); 
+    return 0;
 }

@@ -1,0 +1,6 @@
+[submodule "CServerLibraries"]
+	path = CServerLibraries
+	url = https://github.com/CS3141-Team-DROP-TABLE/CServerLibraries.git
+[submodule "lib/CServerLibraries"]
+	path = lib/CServerLibraries
+	url = https://github.com/CS3141-Team-DROP-TABLE/CServerLibraries.git

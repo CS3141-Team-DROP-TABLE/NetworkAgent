@@ -1,10 +1,11 @@
 # Makefile for NetworkAgent
 
 # variables for building with
+C			= gcc
 CXX			= c++
 VPATH		= src
 BPATH		= build
-OBJ 		= WatchDog.o MonitoringAgent.o Logger.o
+OBJ 		= WatchDog.o MonitoringAgent.o Logger.o Reporter.o ServerConnect.o
 BIN			= bin/*
 CPP_FILES 	= src/*.cpp
 H_FILES 	= include/*.h
@@ -30,6 +31,12 @@ MonitoringAgent.o: MonitoringAgent.cpp
 
 Logger.o: Logger.cpp
 	$(CXX) -c $< $(INCL) -o $(BPATH)/Logger.o
+
+Reporter.o: Reporter.cpp
+	$(CXX) -c $< $(INCL) -Ilib/CServerLibraries/include -o $(BPATH)/Reporter.o
+
+ServerConnect.o: serverConnect.c
+	$(C) -c lib/CServerLibraries/$< -Ilib/CServerLibraries/include -o $(BPATH)/ServerConnect.o
 
 # extra options
 .PHONY install clean:

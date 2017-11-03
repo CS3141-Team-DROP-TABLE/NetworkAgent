@@ -15,17 +15,27 @@
 
 using namespace std;
 
+// Constructor
+Logger::Logger( string user )
+{
+    logUser = user;
+    logPath = LOGPATH;
+}
+
 Logger::Logger( string user, string path )
 {
     logUser = user;
     logPath = path;
 }
 
+// Logs a message to file
 void Logger::log( string message ) 
 {
     // get the current date and time
-    time_t currentTime = time(0);
-    tm *lTime = localtime(&currentTime);
+    time_t currentTime = time(NULL);
+    char now[30];
+    strftime(now, 30, "[ %D ] %T", localtime(&currentTime));
+    string logDate(now);
 
     // Open up the log file to write to
     // Since this is a log the file gets appended
@@ -37,8 +47,12 @@ void Logger::log( string message )
         exit( 1 );
     }
 
+    /*
     logFile << "[ " << lTime->tm_mday << "/" << 1 + lTime->tm_mon << "/" << 1900 + lTime->tm_year << " ] "
             << 1 + lTime->tm_hour << ":" << 1 + lTime->tm_min << ":" << 1 + lTime->tm_sec
             << " -- " + logUser + "-- " << message << endl;
+    */
+    
+    logFile << logDate << " -- " + logUser + "-- " + message << endl;
     logFile.close();
 }

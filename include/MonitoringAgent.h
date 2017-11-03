@@ -13,22 +13,17 @@ public:
     // VARIABLES
     string  name;
     string  ip;
-    string  reportingServer;
-    string  logPath;
     
     // CONSTRUCTORS
-    MonitoringAgent( string assignedName, string assignedIP, string assignedReportingServer, string assignedLogPath );
+    MonitoringAgent( string assignedName, string assignedIP );
 
     // METHODS
     int     checkConnectivity();
-    void    checkBandwidth();
-    void    checkLatency();
-    void    checkCPU();
+    int     checkBandwidth();
+    int     checkLatency();
+    int     checkCPU();
 
 private:
-
-    // METHODS
-    void    report( string server );
 
 };
 
