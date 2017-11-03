@@ -4,8 +4,8 @@
 NetworkAgent is a kind of daemon that monitors a host and reports back to a central server.
 
 ### Syntax
-NetworkAgent <name> <ip address> <reporting server>
-NetworkAgent -c </path/to/config>
+    NetworkAgent <name> <ip address> <reporting server>
+    NetworkAgent -c </path/to/config>
 
 ### Methods
 
