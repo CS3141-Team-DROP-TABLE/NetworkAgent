@@ -13,7 +13,7 @@ O_FILES		= build/*.o
 
 # compiler flags
 ARGS		= -std=c++11 -Wall -Wextra -pedantic
-LIBS		= -lcurl
+LIBS		= -lcurl -lgnutls
 INCL		= -Iinclude
 
 # command shortcuts
@@ -35,8 +35,8 @@ Logger.o: Logger.cpp
 Reporter.o: Reporter.cpp
 	$(CXX) -c $< $(INCL) -Ilib/CServerLibraries/include -o $(BPATH)/Reporter.o
 
-ServerConnect.o: serverConnect.c
-	$(C) -c lib/CServerLibraries/$< -Ilib/CServerLibraries/include -o $(BPATH)/ServerConnect.o
+ServerConnect.o:
+	$(CXX) -c lib/CServerLibraries/serverConnect.c -Ilib/CServerLibraries/include -o $(BPATH)/ServerConnect.o
 
 # extra options
 .PHONY install clean:

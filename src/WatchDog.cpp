@@ -101,7 +101,7 @@ int main( int argc, char* argv[] )
     signal( SIGINT, signalWatcher );
 
     // reporter for reporting check statuses to
-    Reporter reporter( reportingServer, "Name", "cert.pem" );
+    Reporter reporter( reportingServer, "nhs_server_domain.com", "/Users/bbilder/Git/NetworkAgent/cert/intermediate.cert.pem" );
 
     // Let's run the WatchDog until a kill signal is received!
     //for ( int i = 0; i < 5; i++ )
@@ -114,6 +114,9 @@ int main( int argc, char* argv[] )
         reporter.report( 4, agent.checkCPU() );
         sleep(60);
     }
+
+    // clean up
+    reporter.deinit();
 
     return 0;
 }

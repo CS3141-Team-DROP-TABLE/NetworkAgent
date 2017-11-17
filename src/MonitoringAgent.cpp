@@ -76,12 +76,69 @@ int MonitoringAgent::checkConnectivity()
     return status;
 }
 
+// helper method for bandwidth check
+static size_t WriteCallback(void *ptr, size_t size, size_t nmemb, void *data)
+{
+    /* we are not interested in the downloaded bytes itself,
+    so we only return the size we would have saved ... */ 
+    (void)ptr;  /* unused */ 
+    (void)data; /* unused */ 
+
+    return (size_t)(size * nmemb);
+}
+
 // checks bandwidth thoroughput of the host
 int MonitoringAgent::checkBandwidth() 
 {
     agentLogger.log( "Checking bandwidth capacity..." );
 
-    return 0;
+    double bandwidth = 0.0;
+    int bandwidthRes = 0;
+
+    // Options for the files to fetch for the test
+    string base_url = "https://tsp.bilderback.me/bw_test/";
+    string file_1M = "1M.bin";
+    string file_2M = "2M.bin";
+    string file_5M = "5M.bin";
+    string file_10M = "10M.bin";
+    string file_20M = "20M.bin";
+    string file_50M = "50M.bin";
+    string file_100M = "100M.bin";
+
+    // initialize curl
+    curl = curl_easy_init();
+
+    if( curl )
+    {
+        // set curl options
+        curl_easy_setopt(curl, CURLOPT_URL, "https://tsp.bilderback.me/bw_test/10M.bin" );
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+
+        // do the request
+        httpResult = curl_easy_perform(curl);
+
+        // check request response
+        if( httpResult == CURLE_OK )
+        {
+            /* check for average download speed */ 
+            httpResult = curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD, &bandwidth);
+
+            string bandwidthStr = to_string(bandwidth);
+            agentLogger.log( "Current bandwidth: " + bandwidthStr );
+        }
+        else
+        {
+            agentLogger.log( "Unable to perform bandwidth test. Connection failed." );
+            bandwidth = 0.0;
+        }
+   
+        // clean any leftovers
+        curl_easy_cleanup(curl);
+    }
+
+    bandwidthRes = (int) bandwidth;
+
+    return bandwidthRes;
 }
 
 // checks network latency of the host

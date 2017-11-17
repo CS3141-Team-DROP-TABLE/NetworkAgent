@@ -19,8 +19,12 @@ public:
 
     // METHODS
     void report( int type, int status );
+    void deinit();
 
 private:
+
+    void connect();
+    void disconnect();
 
 };
 

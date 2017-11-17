@@ -46,12 +46,6 @@ void Logger::log( string message )
         cout << "Unable to open " << logPath << endl;
         exit( 1 );
     }
-
-    /*
-    logFile << "[ " << lTime->tm_mday << "/" << 1 + lTime->tm_mon << "/" << 1900 + lTime->tm_year << " ] "
-            << 1 + lTime->tm_hour << ":" << 1 + lTime->tm_min << ":" << 1 + lTime->tm_sec
-            << " -- " + logUser + "-- " << message << endl;
-    */
     
     logFile << logDate << " -- " + logUser + "-- " + message << endl;
     logFile.close();
