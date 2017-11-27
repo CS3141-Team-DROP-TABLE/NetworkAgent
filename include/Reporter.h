@@ -18,7 +18,7 @@ public:
     Reporter( string server, string name, string path );
 
     // METHODS
-    void report( int type, int status );
+    void report( int type, string status );
     void deinit();
 
 private:

@@ -42,8 +42,8 @@ int main( int argc, char* argv[] )
     {
         // no input
         cout << "Usage: \n"
-            << "NetworkAgent [-v] <name> <ip> <reporting server>"
-            << "NetworkAgent [-v] -c <path to configuration file>"
+            << "NetworkAgent <name> <ip> <reporting server>\n"
+            << "NetworkAgent -c <path to configuration file>"
             << endl;
         return( 1 );
     }

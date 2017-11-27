@@ -18,10 +18,10 @@ public:
     MonitoringAgent( string assignedName, string assignedIP );
 
     // METHODS
-    int     checkConnectivity();
-    int     checkBandwidth();
-    int     checkLatency();
-    int     checkCPU();
+    string  checkConnectivity();
+    string  checkBandwidth();
+    string  checkLatency();
+    string  checkCPU();
 
 private:
 

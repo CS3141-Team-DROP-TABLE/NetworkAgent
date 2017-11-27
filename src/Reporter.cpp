@@ -42,9 +42,9 @@ void Reporter::deinit( )
 }
 
 // reports some information to a server
-void Reporter::report( int type, int status )
+void Reporter::report( int type, string status )
 {
-    string intToStr = to_string(type) + to_string(status);
+    string intToStr = to_string(type) + status;
     char buff[20];
     memset(buff, 0, sizeof(char) * 20);
     memcpy(buff, intToStr.c_str(), (intToStr.length() < 20)? intToStr.length() : sizeof(char) * 20);

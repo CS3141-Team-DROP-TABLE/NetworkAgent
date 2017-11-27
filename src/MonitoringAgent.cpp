@@ -35,7 +35,7 @@ MonitoringAgent::MonitoringAgent( string assignedName, string assignedIP )
 
 // check if the host is connected to the internet using curl
 // this tries to get to google
-int MonitoringAgent::checkConnectivity()
+string MonitoringAgent::checkConnectivity()
 {
     agentLogger.log( "Checking network connectivity..." );
 
@@ -73,7 +73,7 @@ int MonitoringAgent::checkConnectivity()
         curl_easy_cleanup(curl);
     }
 
-    return status;
+    return to_string(status);
 }
 
 // helper method for bandwidth check
@@ -88,12 +88,11 @@ static size_t WriteCallback(void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 // checks bandwidth thoroughput of the host
-int MonitoringAgent::checkBandwidth() 
+string MonitoringAgent::checkBandwidth() 
 {
     agentLogger.log( "Checking bandwidth capacity..." );
 
     double bandwidth = 0.0;
-    int bandwidthRes = 0;
 
     // Options for the files to fetch for the test
     string base_url = "https://tsp.bilderback.me/bw_test/";
@@ -111,7 +110,7 @@ int MonitoringAgent::checkBandwidth()
     if( curl )
     {
         // set curl options
-        curl_easy_setopt(curl, CURLOPT_URL, "https://tsp.bilderback.me/bw_test/10M.bin" );
+        curl_easy_setopt(curl, CURLOPT_URL, "https://tsp.bilderback.me/bw_test/100M.bin" );
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 
         // do the request
@@ -122,6 +121,8 @@ int MonitoringAgent::checkBandwidth()
         {
             /* check for average download speed */ 
             httpResult = curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD, &bandwidth);
+            // since the speed from curl is in bytes/sec we need to change to megabits/sec
+            bandwidth = (bandwidth / 1024 / 1024) * 8; 
 
             string bandwidthStr = to_string(bandwidth);
             agentLogger.log( "Current bandwidth: " + bandwidthStr );
@@ -136,23 +137,21 @@ int MonitoringAgent::checkBandwidth()
         curl_easy_cleanup(curl);
     }
 
-    bandwidthRes = (int) bandwidth;
-
-    return bandwidthRes;
+    return to_string(bandwidth);
 }
 
 // checks network latency of the host
-int MonitoringAgent::checkLatency() 
+string MonitoringAgent::checkLatency() 
 {
     agentLogger.log( "Checking network latency..." );
 
-    return 0;
+    return "0";
 }
 
 // checks the current processing load of the host
-int MonitoringAgent::checkCPU() 
+string MonitoringAgent::checkCPU() 
 {
     agentLogger.log( "Checking CPU load..." );
 
-    return 0;
+    return "0";
 }
