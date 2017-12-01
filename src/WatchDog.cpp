@@ -15,14 +15,19 @@
 #include "MonitoringAgent.h"
 #include "Logger.h"
 #include "Reporter.h"
+//#include "configLoader.h"
+//#include "AVL.h"
 
 using namespace std;
 
 // variables to set later on
-string name;
+string id;
+string aid;
 string ip;
 string reportingServer;
 string configPath;
+string domain;
+string certPath;
 
 // logger for making logs
 Logger daemonLogger( "Daemon  " );
@@ -41,16 +46,19 @@ int main( int argc, char* argv[] )
     if ( argc == 1 )
     {
         // no input
-        cout << "Usage: \n"
-            << "NetworkAgent <name> <ip> <reporting server>\n"
-            << "NetworkAgent -c <path to configuration file>"
+        cout << "\nUsage: \n"
+            << "NetworkAgent <Agent ID> <ip> <reporting server> <server domain> <certificate path>\n"
+            << "NetworkAgent -c <path to configuration file>\n"
+            << "NetworkAgent help\n"
             << endl;
         return( 1 );
     }
     else if ( ( argc == 3 && strcmp(argv[1], "-c") == 0 ) )
     {
         // read in config file
-        configPath = argv[2];
+        //configPath = argv[2];
+
+        /*
         ifstream configFile;
         configFile.open(configPath, ios_base::in);
         if ( !configFile )
@@ -66,23 +74,46 @@ int main( int argc, char* argv[] )
         }
 
         configFile.close();
+        */
+
+        /*
+        struct config conf;
+        config_loader_init(&conf, 0, 0);
+        load_config(&conf, argv[2]);
+
+        id = get_config(&conf, "id");
+        aid = "A" + id + ";";
+        ip = get_config(&conf, "ip");
+        reportingServer = get_config(&conf, "server");
+        domain = get_config(&conf, "domain");
+        certPath = get_config(&conf, "certificate");
+        */
+
     }
-    else if ( ( argc == 2 && strcmp(argv[1], "help") == 0 ) || argc < 4 )
+    else if ( ( argc == 2 && strcmp(argv[1], "help") == 0 ) || argc < 6 )
     {
         // display help
         cout
         << "\nNetworkAgent Help\n"
         << "----------------------------------------------------------\n"
-        << "NetworkAgent <name> <ip> <reporting server>\n"
+        << "NetworkAgent <Agent ID> <reporting server> <server domain> <certificate path>\n"
+        << "NetworkAgent -c /path/to/file\n\n"
+        << "Agent ID: The ID given to you by the web app for your agent to report updates with.\n"
+        << "Reporting Server: The server that the agent will be reporting updates to.\n"
+        << "Server Domain: Used for encryption, this is the domain of the certificate used for encryption.\n"
+        << "Certificate Path: The path to the certificate used for encryption.\n"
         << endl;
         return( 2 );
     }
     else
     {
         // read in settings from input
-        name = argv[1];
+        id = argv[1];
+        aid = "A" + id + ";";
         ip = argv[2];
         reportingServer = argv[3];
+        domain = argv[4];
+        certPath = argv[5];
     }
 
     daemonLogger.log( "Starting the NetworkAgent" );
@@ -90,28 +121,28 @@ int main( int argc, char* argv[] )
     // make our new agent
     cout << "\nAgent Details\n"
     << "-------------------------\n"
-    << "Name: " << name << "\n"
-    << "IP: " << ip << "\n"
+    << "Agent ID: " << aid << "\n"
     << "Reporting server: " << reportingServer << "\n" << endl;
-    MonitoringAgent agent( name, ip );
-    daemonLogger.log( "Now monitoring: " + name + " @ " + ip );
+    MonitoringAgent agent( aid );
+    daemonLogger.log( "Now monitoring: " + aid );
     daemonLogger.log( "Reporting to  : " + reportingServer );
 
     // terminate loop and close program if signal is received
     signal( SIGINT, signalWatcher );
 
     // reporter for reporting check statuses to
-    Reporter reporter( reportingServer, "nhs_server_domain.com", "/Users/bbilder/Git/NetworkAgent/cert/intermediate.cert.pem" );
+    Reporter reporter( reportingServer, domain, certPath );
 
     // Let's run the WatchDog until a kill signal is received!
     //for ( int i = 0; i < 5; i++ )
     while( 1 )
     {
         daemonLogger.log( "Running agent checks..." );
-        reporter.report( 1, agent.checkConnectivity() );
-        reporter.report( 2, agent.checkLatency() );
-        reporter.report( 3, agent.checkBandwidth() );
-        reporter.report( 4, agent.checkCPU() );
+        reporter.report( aid, 0, agent.checkIP() );
+        reporter.report( aid, 1, agent.checkConnectivity() );
+        //reporter.report( aid, 2, agent.checkLatency() );
+        reporter.report( aid, 3, agent.checkBandwidth() );
+        //reporter.report( aid, 4, agent.checkCPU() );
         sleep(60);
     }
 

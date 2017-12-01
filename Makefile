@@ -15,16 +15,18 @@ O_FILES		= build/*.o
 ARGS		= -std=c++11 -Wall -Wextra -pedantic
 LIBS		= -lcurl -lgnutls
 INCL		= -Iinclude
+SERVLIB		= -Ilib/CServerLibraries/include
+SERVSRC		= lib/CServerLibraries
 
 # command shortcuts
 RM			= rm -f
 
 # building rules
 NetworkAgent: $(OBJ)
-	$(CXX) -o bin/NetworkAgent $(ARGS) $(LIBS) $(O_FILES)
+	$(CXX) -o bin/NetworkAgent $(ARGS) $(LIBS) $(SERVLIB) $(O_FILES)
 
 WatchDog.o: WatchDog.cpp
-	$(CXX) -c $< $(INCL) -o $(BPATH)/WatchDog.o
+	$(CXX) -c $< $(INCL) $(SERVLIB) -o $(BPATH)/WatchDog.o
 
 MonitoringAgent.o: MonitoringAgent.cpp
 	$(CXX) -c $< $(INCL) -o $(BPATH)/MonitoringAgent.o
@@ -33,15 +35,25 @@ Logger.o: Logger.cpp
 	$(CXX) -c $< $(INCL) -o $(BPATH)/Logger.o
 
 Reporter.o: Reporter.cpp
-	$(CXX) -c $< $(INCL) -Ilib/CServerLibraries/include -o $(BPATH)/Reporter.o
+	$(CXX) -c $< $(INCL) $(SERVLIB) -o $(BPATH)/Reporter.o
 
 ServerConnect.o:
-	$(CXX) -c lib/CServerLibraries/serverConnect.c -Ilib/CServerLibraries/include -o $(BPATH)/ServerConnect.o
+	$(CXX) -c $(SERVSRC)/serverConnect.c $(SERVLIB) -o $(BPATH)/ServerConnect.o
+
+#ConfigLoader.o:
+#	$(CXX) -c $(SERVSRC)/configLoader.c $(SERVLIB) -o $(BPATH)/ConfigLoader.o
+
+#StringMap.o:
+#	$(CXX) -c $(SERVSRC)/stringMap.c $(SERVLIB) -o $(BPATH)/StringMap.o
+
+#AVL.o:
+#	$(CXX) -c $(SERVSRC)/AVL.c $(SERVLIB) -o $(BPATH)/AVL.o
 
 # extra options
 .PHONY install clean:
 install:
 	chmod +x bin/NetworkAgent
+	cp bin/NetworkAgent /usr/local/bin/NetworkAgent
 
 clean:
 	$(RM) $(O_FILES)

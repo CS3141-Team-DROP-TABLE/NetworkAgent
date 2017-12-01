@@ -23,14 +23,68 @@ CURLcode httpResult;
 // init the objects for use
 Logger agentLogger( "Agent   " );
 
-MonitoringAgent::MonitoringAgent( string assignedName, string assignedIP ) 
+MonitoringAgent::MonitoringAgent( string assignedName ) 
 {
     name = assignedName;
-    ip = assignedIP;
 
     // initialize curl with the networking stack
     // this is for some other methods
     curl_global_init(CURL_GLOBAL_ALL);
+}
+
+size_t curlStringHelper(void *contents, size_t size, size_t nmemb, std::string *s)
+{
+    size_t newLength = size*nmemb;
+    size_t oldLength = s->size();
+    try
+    {
+        s->resize(oldLength + newLength);
+    }
+    catch(std::bad_alloc &e)
+    {
+        //handle memory problem
+        return 0;
+    }
+
+    std::copy((char*)contents,(char*)contents+newLength,s->begin()+oldLength);
+    return size*nmemb;
+}
+
+string MonitoringAgent::checkIP()
+{
+    agentLogger.log( "Getting IP" );
+
+    string ipAddr;
+
+    // initialize curl
+    curl = curl_easy_init();
+
+    if( curl )
+    {
+        // set the options for the request
+        curl_easy_setopt(curl, CURLOPT_URL, "https://ipinfo.io/ip");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlStringHelper);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ipAddr);
+
+        // do the request
+        httpResult = curl_easy_perform(curl);
+
+        // check request response
+        if( httpResult == CURLE_OK )
+        {
+            agentLogger.log( "IP gathered." );
+        }
+        else
+        {
+            agentLogger.log( "Unable to connect to network." );
+            ipAddr = "127.0.0.1";
+        }
+   
+        // clean any leftovers
+        curl_easy_cleanup(curl);
+    }
+
+    return ipAddr;
 }
 
 // check if the host is connected to the internet using curl

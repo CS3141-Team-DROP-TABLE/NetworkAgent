@@ -12,12 +12,12 @@ public:
 
     // VARIABLES
     string  name;
-    string  ip;
     
     // CONSTRUCTORS
-    MonitoringAgent( string assignedName, string assignedIP );
+    MonitoringAgent( string assignedName );
 
     // METHODS
+    string  checkIP();
     string  checkConnectivity();
     string  checkBandwidth();
     string  checkLatency();
